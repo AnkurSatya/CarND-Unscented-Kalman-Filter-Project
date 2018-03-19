@@ -42,12 +42,15 @@ int main()
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
-
+    cout<<"Starting of the loop"<<endl;
+    cout<<"Length "<<length<<endl;
+    cout<<"Data[0] "<<data[0]<<endl<<"Data[1] "<<data[1]<<endl;
     if (length && length > 2 && data[0] == '4' && data[1] == '2')
     {
 
       auto s = hasData(std::string(data));
       if (s != "") {
+        cout<<"Message recieved"<<endl;
       	
         auto j = json::parse(s);
 
@@ -106,7 +109,9 @@ int main()
     	  ground_truth.push_back(gt_values);
           
           //Call ProcessMeasurment(meas_package) for Kalman filter
-    	  ukf.ProcessMeasurement(meas_package);    	  
+        cout<<"Above ProcessMeasurement"<<endl;
+    	  ukf.ProcessMeasurement(meas_package);  
+        cout<<"Below ProcessMeasurement"<<endl;  	  
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
 
@@ -126,9 +131,9 @@ int main()
     	  estimate(3) = v2;
     	  
     	  estimations.push_back(estimate);
-
+        cout<<"Before RMSE"<<endl;
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
-
+        cout<<"After RMSE"<<endl;
           json msgJson;
           msgJson["estimate_x"] = p_x;
           msgJson["estimate_y"] = p_y;
@@ -137,12 +142,15 @@ int main()
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
+          cout<<"After auto msg"<<endl;
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 	  
         }
-      } else {
-        
+        cout<<"End of the function."<<endl;
+      } 
+      else {
+        cout<<"In the else statement"<<endl;
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }

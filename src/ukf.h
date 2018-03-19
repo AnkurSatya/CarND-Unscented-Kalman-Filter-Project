@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <cmath>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -28,11 +29,15 @@ public:
   ///* state covariance matrix
   MatrixXd P_;
 
+  //Generated Sigma points.
+  MatrixXd sigma_points;
+
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
   ///* time when the state is true, in us
-  long long time_us_;
+  // long long time_us_;
+  long previous_timestamp;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
