@@ -4,6 +4,7 @@
 #include <math.h>
 #include "ukf.h"
 #include "tools.h"
+#include <fstream>
 
 using namespace std;
 
@@ -26,6 +27,8 @@ std::string hasData(std::string s) {
   return "";
 }
 
+int count_for_NIS = 0;
+
 int main()
 {
   uWS::Hub h;
@@ -42,16 +45,12 @@ int main()
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
-    cout<<"Starting of the loop"<<endl;
-    cout<<"Length "<<length<<endl;
-    cout<<"Data[0] "<<data[0]<<endl<<"Data[1] "<<data[1]<<endl;
     if (length && length > 2 && data[0] == '4' && data[1] == '2')
     {
 
       auto s = hasData(std::string(data));
       if (s != "") {
-        cout<<"Message recieved"<<endl;
-      	
+       
         auto j = json::parse(s);
 
         std::string event = j[0].get<std::string>();
@@ -109,9 +108,7 @@ int main()
     	  ground_truth.push_back(gt_values);
           
           //Call ProcessMeasurment(meas_package) for Kalman filter
-        cout<<"Above ProcessMeasurement"<<endl;
     	  ukf.ProcessMeasurement(meas_package);  
-        cout<<"Below ProcessMeasurement"<<endl;  	  
 
     	  //Push the current estimated x,y positon from the Kalman filter's state vector
 
@@ -131,9 +128,7 @@ int main()
     	  estimate(3) = v2;
     	  
     	  estimations.push_back(estimate);
-        cout<<"Before RMSE"<<endl;
     	  VectorXd RMSE = tools.CalculateRMSE(estimations, ground_truth);
-        cout<<"After RMSE"<<endl;
           json msgJson;
           msgJson["estimate_x"] = p_x;
           msgJson["estimate_y"] = p_y;
@@ -142,20 +137,34 @@ int main()
           msgJson["rmse_vx"] = RMSE(2);
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
-          cout<<"After auto msg"<<endl;
-          // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
-	  
+
+          //Writing NIS values to a data file.
+        // vector<double> NIS = ukf.NIS_values();
+        // cout<<"NIS size "<<NIS.size()<<endl<<"Count for NIS "<<count_for_NIS<<endl;
+        // if(count_for_NIS == 0 && NIS.size()>0)
+        // {
+        //   cout<<"In hte jjjjjjjjjjjjdskmdlsmldsldlsmdlsmls"<<endl;
+        
+        // ofstream output;
+        // output.open("./NIS.ods");
+        // for(int i=0; i<NIS.size(); i++)
+        // {
+        //   output << i+1;
+        //   output << '\t';
+        //   output << NIS[i];
+        //   output << '\n';
+        // }
+        // output.close();
+        // count_for_NIS++;
+        // }
         }
-        cout<<"End of the function."<<endl;
       } 
       else {
-        cout<<"In the else statement"<<endl;
         std::string msg = "42[\"manual\",{}]";
         ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
       }
     }
-
   });
 
   // We don't need this since we're not using HTTP but if it's removed the program

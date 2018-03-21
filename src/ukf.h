@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 #include <cmath>
+#include "tools.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -72,7 +73,9 @@ public:
   ///* Sigma point spreading parameter
   double lambda_;
 
+  Tools tools;
 
+  vector<double> NIS_list;
   /**
    * Constructor
    */
@@ -107,6 +110,8 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+  vector<double> NIS_values();
 };
 
 #endif /* UKF_H */

@@ -2,6 +2,7 @@
 #define TOOLS_H_
 #include <vector>
 #include "Eigen/Dense"
+#include <cmath>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -23,6 +24,9 @@ public:
   * A helper method to calculate RMSE.
   */
   VectorXd CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth);
+
+  //A helper function to restrict the angle value between -pi to pi.
+  void restrict_angle(double &value);
 
 };
 
